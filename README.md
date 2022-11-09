@@ -14,10 +14,10 @@ Download `MathHotkey.exe` in the executeable folder. Run the file and a new icon
 
 ## Usage Examples
 ### Document
-![Literally Math](https://github.com/JesseBS2/Math-Hotkey/blob/master/examples/document_use_gif.gif)
+![Literally Math](https://github.com/JesseBS2/Math-Hotkey/blob/master/examples/document_use_gif.gif)<br>
 An example of math that is already typed out, but normally can't be calculated unless using some external application
 
 
 ### Minecraft
-![Wall Count Calcs](https://github.com/JesseBS2/Math-Hotkey/blob/master/examples/mc_use_gif.gif)
-This is one I've come across quite a few times myself, needing to know how many blocks to get to fill in a given space
+![Wall Count Calcs](https://github.com/JesseBS2/Math-Hotkey/blob/master/examples/mc_use_gif.gif)<br>
+This is one I've come across quite a few times myself, needing to know how many blocks to get to fill in a given space. This is actually the issue that gave me the idea of this program
