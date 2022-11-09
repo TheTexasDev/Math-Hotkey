@@ -8,6 +8,8 @@ Worried about the fact it uses the computer's cliboard? Don't be! Anything you h
 Download `MathHotkey.exe` in the executeable folder. Run the file and a new icon will be added to your system tray, from then you can use the hotkey where it is available.
 
 
+
+## Usage Examples
 ### Document
 ![Literally Math](https://github.com/JesseBS2/Math-Hotkey/blob/master/examples/document_use_gif.gif)
 An example of math that is already typed out, but normally can't be calculated unless using some external application
