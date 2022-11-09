@@ -1,4 +1,4 @@
-import tkinter, keyboard, pyperclip, pystray, re, atexit
+import tkinter, keyboard, pyperclip, pystray, re
 import pydirectinput as dirinput
 from math import sqrt
 from PIL import Image, ImageDraw
