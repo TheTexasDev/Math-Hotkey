@@ -8,7 +8,7 @@ This program I made will check text you have selected, and evaluate it as a math
 Worried about the fact it uses the computer's cliboard? Don't be! Anything you have copied before you run the hotkey will be saved and then put back into your pc's clipboard after the math is done.
 
 ## Installation
-Download `MathHotkey.exe` in the executeable folder. Run the file and a new icon will be added to your system tray, from then you can use the hotkey where it is available.
+Download the exe from the [releases page](https://github.com/JesseBS2/Math-Hotkey/releases/latest). Run the file and a new icon will be added to your system tray, from then you can use the hotkey where it is available.
 
 <br><br>
 
