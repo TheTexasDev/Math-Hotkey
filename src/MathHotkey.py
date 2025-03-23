@@ -1,35 +1,57 @@
-import tkinter, keyboard, pyperclip, pystray, re
+import tkinter, keyboard, pyperclip, pystray, os, atexit, json
 import pydirectinput as dirinput
 from math import sqrt
 from PIL import Image, ImageDraw
 from tkinter.messagebox import showerror, showinfo
+#from plyer import notification
+from win10toast import ToastNotifier
+
+
+def resource_path(relative_path):
+    base_path = os.path.dirname(os.path.abspath(__file__)) # path to the working directory
+
+    location = os.path.join(base_path, relative_path) # path from where the file is running to the one you want
+    print(location)
+    return location
 
 hotkeyseries = ["ctrl","shift","e"]
+prompt_on_error = True
+
+with open(resource_path("settings/config.json"),"r") as f:
+    data = json.load(f)
+    if (type(data["hotkey"]) is list):
+
+        hotkeyseries = data["hotkey"]
+        print(hotkeyseries)
+
+    if (type(data["showAlertOnFail"]) is bool):
+        prompt_on_error = data["showAlertOnFail"]
+
+    f.close()
+
 
 # I had an image but for some reason I can't get it to load!
 def create_icon():
-    image = Image.new('RGB', (99, 99), "lightblue")
-    dc = ImageDraw.Draw(image)
-    dc.rectangle(((33,0),(66,33)),"black")
-    dc.rectangle(((0,33),(33,66)),"black")
-    dc.rectangle(((66,33),(99,66)),"black")
+    image = Image.open(resource_path("./MathKey.ico"))
 
     return image
-
 
 def quit_window(icon):
    icon.stop()
 
 
-
 def hide_window():
     menu = (pystray.MenuItem('Quit', quit_window),)
     icon = pystray.Icon("Math Hotkey", create_icon(), "'Text Select to Math' Hotkey", menu)
-    # had a method to not show a popup, but once the file was an exe, it couldn't get the right name
-    #if not os.path.splitext(os.path.basename(__file__))[0].lower().endswith("_startup"):
-     #   pyautogui.alert("Application minimized to system tray.\nUse 'ctrl+shift+e' to evaluate selected text","Math Hotkey")
-    icon.run()
 
+    ToastNotifier().show_toast(
+        "Math Hotkey",
+        "Minimized to system tray, use `%s` to evaluate selected text"%("+".join(hotkeyseries)),
+        icon_path = resource_path("./MathKey.ico"),
+        duration = 5
+    )
+
+    icon.run()
 
 
 # Main function
@@ -65,7 +87,7 @@ def runit():
         outit = postdata # I probably don't need this here but am stoopid so here it is anyway
     finally:
         keyboard.write(str(outit))
-        if outit == postdata:
+        if outit == postdata and prompt_on_error:
             showerror("Math Hotkey", "The following input could not be evaluated:\n'%s'"%postdata) # Some confirmation that it did run and it's the user that made a whoopsie
     
     app.destroy() # delete the window, it's useless now
@@ -111,7 +133,11 @@ def evaluate(inp):
     return outp
 
 
+try:
+    keyboard.add_hotkey("+".join(hotkeyseries), runit) # Literally need a whole new library for this ONE function
+except ValueError as e:
+    showerror("Math Hotkey",str(e).split("ValueError(")[1].split(")")[0])
+    quit()
 
-keyboard.add_hotkey("+".join(hotkeyseries), runit) # Literally need a whole new library for this ONE function
 hide_window()
 keyboard.wait()
