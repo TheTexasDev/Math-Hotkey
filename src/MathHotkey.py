@@ -1,4 +1,4 @@
-import tkinter, keyboard, pyperclip, pystray, os, atexit, json
+import tkinter, keyboard, pyperclip, pystray, os, json
 import pydirectinput as dirinput
 from math import sqrt
 from PIL import Image, ImageDraw
@@ -16,42 +16,75 @@ def resource_path(relative_path):
 
 hotkeyseries = ["ctrl","shift","e"]
 prompt_on_error = True
-
-with open(resource_path("settings/config.json"),"r") as f:
-    data = json.load(f)
-    if (type(data["hotkey"]) is list):
-
-        hotkeyseries = data["hotkey"]
-        print(hotkeyseries)
-
-    if (type(data["showAlertOnFail"]) is bool):
-        prompt_on_error = data["showAlertOnFail"]
-
-    f.close()
+startup_message = True
+show_changed = True
 
 
-# I had an image but for some reason I can't get it to load!
+def load_settings():
+    # Get settings from config file
+    with open(resource_path("settings/config.json"),"r") as f:
+        data = json.load(f)
+        if ("hotkey" in data and type(data["hotkey"]) is list):
+            global hotkeyseries
+            hotkeyseries = data["hotkey"]
+            print(hotkeyseries)
+
+        if ("showAlertOnFail" in data and type(data["showAlertOnFail"]) is bool):
+            global prompt_on_error
+            prompt_on_error = data["showAlertOnFail"]
+
+        if ("promptOnStart" in data and type(data["promptOnStart"]) is bool):
+            global startup_message
+            startup_message = data["promptOnStart"]
+
+        if ("promptOnReload" in data and type(data["promptOnReload"]) is bool):
+            global show_changed
+            show_changed = data["promptOnReload"]
+
+        f.close()
+
+
+    try:
+        keyboard.add_hotkey("+".join(hotkeyseries), runit)
+    except ValueError as e:
+        showerror("Math Hotkey",str(e).split("ValueError(")[1].split(")")[0])
+        quit()
+    
+
+def reload_settings():
+    keyboard.unhook_all_hotkeys()
+    load_settings()
+
+    if (show_changed):
+        ToastNotifier().show_toast(
+            "Math Hotkey",
+            "Settings changed. Use `%s` to evaluate selected text"%("+".join(hotkeyseries)),
+            icon_path = resource_path("./MathKey.ico"),
+            duration = 5)
+
+
+
 def create_icon():
     image = Image.open(resource_path("./MathKey.ico"))
-
     return image
 
-def quit_window(icon):
-   icon.stop()
-
+def quit_window():
+    keyboard.unhook_all()
+    os._exit(1)
+    
 
 def hide_window():
-    menu = (pystray.MenuItem('Quit', quit_window),)
+    menu = (pystray.MenuItem('Reload Settings', reload_settings), pystray.MenuItem('Quit', quit_window))
     icon = pystray.Icon("Math Hotkey", create_icon(), "'Text Select to Math' Hotkey", menu)
 
-    ToastNotifier().show_toast(
-        "Math Hotkey",
-        "Minimized to system tray, use `%s` to evaluate selected text"%("+".join(hotkeyseries)),
-        icon_path = resource_path("./MathKey.ico"),
-        duration = 5
-    )
+    if (startup_message):
+        ToastNotifier().show_toast(
+            "Math Hotkey",
+            "Minimized to system tray, use `%s` to evaluate selected text"%("+".join(hotkeyseries)),
+            icon_path = resource_path("./MathKey.ico"),
+            duration = 5)
 
-    icon.run()
+    icon.run_detached()
 
 
 # Main function
@@ -133,11 +166,6 @@ def evaluate(inp):
     return outp
 
 
-try:
-    keyboard.add_hotkey("+".join(hotkeyseries), runit) # Literally need a whole new library for this ONE function
-except ValueError as e:
-    showerror("Math Hotkey",str(e).split("ValueError(")[1].split(")")[0])
-    quit()
-
+load_settings()
 hide_window()
 keyboard.wait()
