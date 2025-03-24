@@ -1,4 +1,6 @@
 {
 	"hotkey": ["ctrl","shift","e"],
-	"showAlertOnFail": true
+	"showAlertOnFail": true,
+	"promptOnStart": true,
+	"promptOnReload": true
 }
